@@ -31,23 +31,23 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
             ContentType::WordTemplate => Some(DocxExtractor::extract(&data)?),
             ContentType::WordDocumentMacroEnabled => Some(DocxExtractor::extract(&data)?),
             ContentType::WordTemplateMacroEnabled => Some(DocxExtractor::extract(&data)?),
-            ContentType::MsExcel => todo!(),
-            ContentType::ExcelSheet => todo!(),
-            ContentType::ExcelTemplate => todo!(),
-            ContentType::ExcelSheetMacroEnabled => todo!(),
-            ContentType::ExcelTemplateMacroEnabled => todo!(),
-            ContentType::ExcelAddInMacroEnabled => todo!(),
-            ContentType::ExcelBinarySheet => todo!(),
-            ContentType::MsPowerPoint => todo!(),
-            ContentType::PowerPointPresentation => todo!(),
-            ContentType::PowerPointTemplate => todo!(),
-            ContentType::PowerPointSlideshow => todo!(),
-            ContentType::PowerPointAddInMacroEnabled => todo!(),
-            ContentType::PowerPointPresentationMacroEnabled => todo!(),
-            ContentType::PowerPointTemplateMacroEnabled => todo!(),
-            ContentType::PowerPointSlideshowMacroEnabled => todo!(),
-            ContentType::MsAccess => todo!(),
-            ContentType::Unknown => None,
+            ContentType::MsExcel => None, // not yet supported
+            ContentType::ExcelSheet => None, // not yet supported
+            ContentType::ExcelTemplate => None, // not yet supported
+            ContentType::ExcelSheetMacroEnabled => None, // not yet supported
+            ContentType::ExcelTemplateMacroEnabled => None, // not yet supported
+            ContentType::ExcelAddInMacroEnabled => None, // not yet supported
+            ContentType::ExcelBinarySheet => None, // not yet supported
+            ContentType::MsPowerPoint => None, // not yet supported
+            ContentType::PowerPointPresentation => None, // not yet supported
+            ContentType::PowerPointTemplate => None, // not yet supported
+            ContentType::PowerPointSlideshow => None, // not yet supported
+            ContentType::PowerPointAddInMacroEnabled => None, // not yet supported
+            ContentType::PowerPointPresentationMacroEnabled => None, // not yet supported
+            ContentType::PowerPointTemplateMacroEnabled => None, // not yet supported
+            ContentType::PowerPointSlideshowMacroEnabled => None, // not yet supported
+            ContentType::MsAccess => None, // not yet supported
+            ContentType::Unknown => None, // not yet supported
         };
 
         match text {
