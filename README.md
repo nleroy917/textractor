@@ -23,3 +23,11 @@ To extract text from a PDF file, send a POST request to the `/extract` endpoint 
 ```bash
 curl -X POST -F "file=@/path/to/file.pdf" http://localhost:3000/extract
 ```
+
+## Supported formats
+- [X] PDF
+- [X] Word (docx)
+- [ ] Excel (xlsx)
+- [ ] PowerPoint (pptx)
+- [ ] Images (png, jpg, etc)
+- [ ] Text (txt)
