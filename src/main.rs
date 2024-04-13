@@ -1,15 +1,19 @@
-use axum::{routing::{get, post}, Router};
+use axum::{
+    routing::{get, post},
+    Router,
+};
 
+pub mod errors;
 pub mod extraction;
-pub mod routes;
 pub mod models;
+pub mod routes;
 
 #[tokio::main]
 async fn main() {
     // initialize tracing
     tracing_subscriber::fmt()
-    .with_max_level(tracing::Level::DEBUG)
-    .init();
+        .with_max_level(tracing::Level::DEBUG)
+        .init();
 
     // build our application with a route
     let app = Router::new()

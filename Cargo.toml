@@ -6,7 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.82"
 axum = { version = "0.7.5", features = ["multipart"] }
+docx-rs = "0.4.15"
 pdf-extract = "0.7.5"
 serde = { version = "1.0.197", features = ["derive"] }
 tokio = { features = ["full"] }
