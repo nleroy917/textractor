@@ -1,12 +1,107 @@
-use pdf_extract::extract_text_from_mem;
 use docx_rs::read_docx;
+use pdf_extract::extract_text_from_mem;
 
 pub trait Extract {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error>;
 }
+pub enum ContentType {
+    Pdf,
+    MsWord,
+    WordDocument,
+    WordTemplate,
+    WordDocumentMacroEnabled,
+    WordTemplateMacroEnabled,
+    MsExcel,
+    ExcelSheet,
+    ExcelTemplate,
+    ExcelSheetMacroEnabled,
+    ExcelTemplateMacroEnabled,
+    ExcelAddInMacroEnabled,
+    ExcelBinarySheet,
+    MsPowerPoint,
+    PowerPointPresentation,
+    PowerPointTemplate,
+    PowerPointSlideshow,
+    PowerPointAddInMacroEnabled,
+    PowerPointPresentationMacroEnabled,
+    PowerPointTemplateMacroEnabled,
+    PowerPointSlideshowMacroEnabled,
+    MsAccess,
+    Unknown,
+}
 
 pub struct PdfExtractor;
 pub struct DocxExtractor;
+
+impl From<&str> for ContentType {
+    fn from(value: &str) -> Self {
+        match value {
+            // word documents
+            "application/msword" => ContentType::MsWord,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => {
+                ContentType::WordDocument
+            }
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.template" => {
+                ContentType::WordTemplate
+            }
+            "application/vnd.ms-word.document.macroEnabled.12" => {
+                ContentType::WordDocumentMacroEnabled
+            }
+            "application/vnd.ms-word.template.macroEnabled.12" => {
+                ContentType::WordTemplateMacroEnabled
+            }
+
+            // excel documents
+            "application/vnd.ms-excel" => ContentType::MsExcel,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => {
+                ContentType::ExcelSheet
+            }
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.template" => {
+                ContentType::ExcelTemplate
+            }
+            "application/vnd.ms-excel.sheet.macroEnabled.12" => ContentType::ExcelSheetMacroEnabled,
+            "application/vnd.ms-excel.template.macroEnabled.12" => {
+                ContentType::ExcelTemplateMacroEnabled
+            }
+            "application/vnd.ms-excel.addin.macroEnabled.12" => ContentType::ExcelAddInMacroEnabled,
+            "application/vnd.ms-excel.sheet.binary.macroEnabled.12" => {
+                ContentType::ExcelBinarySheet
+            }
+
+            // powerpoint
+            "application/vnd.ms-powerpoint" => ContentType::MsPowerPoint,
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation" => {
+                ContentType::PowerPointPresentation
+            }
+            "application/vnd.openxmlformats-officedocument.presentationml.template" => {
+                ContentType::PowerPointTemplate
+            }
+            "application/vnd.openxmlformats-officedocument.presentationml.slideshow" => {
+                ContentType::PowerPointSlideshow
+            }
+            "application/vnd.ms-powerpoint.addin.macroEnabled.12" => {
+                ContentType::PowerPointAddInMacroEnabled
+            }
+            "application/vnd.ms-powerpoint.presentation.macroEnabled.12" => {
+                ContentType::PowerPointPresentationMacroEnabled
+            }
+            "application/vnd.ms-powerpoint.template.macroEnabled.12" => {
+                ContentType::PowerPointTemplateMacroEnabled
+            }
+            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" => {
+                ContentType::PowerPointSlideshowMacroEnabled
+            }
+
+            // microsoft access for some reason?
+            "application/vnd.ms-access" => ContentType::MsAccess,
+
+            // pdfs
+            "application/pdf" => ContentType::Pdf,
+
+            _ => ContentType::Unknown,
+        }
+    }
+}
 
 impl Extract for PdfExtractor {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
@@ -30,7 +125,7 @@ impl Extract for DocxExtractor {
                                     match child {
                                         docx_rs::RunChild::Text(text) => {
                                             documetn_text.push_str(&text.text);
-                                        },
+                                        }
                                         docx_rs::RunChild::Sym(_) => (),
                                         docx_rs::RunChild::DeleteText(_) => (),
                                         docx_rs::RunChild::Tab(_) => (),
@@ -43,9 +138,9 @@ impl Extract for DocxExtractor {
                                         docx_rs::RunChild::InstrText(_) => (),
                                         docx_rs::RunChild::DeleteInstrText(_) => (),
                                         docx_rs::RunChild::InstrTextString(_) => (),
-                                    }  
+                                    }
                                 }
-                            },
+                            }
                             docx_rs::ParagraphChild::Insert(_) => (),
                             docx_rs::ParagraphChild::Delete(_) => (),
                             docx_rs::ParagraphChild::BookmarkStart(_) => (),
@@ -56,7 +151,7 @@ impl Extract for DocxExtractor {
                             docx_rs::ParagraphChild::StructuredDataTag(_) => (),
                         }
                     }
-                },
+                }
                 docx_rs::DocumentChild::Table(_) => (),
                 docx_rs::DocumentChild::BookmarkStart(_) => (),
                 docx_rs::DocumentChild::BookmarkEnd(_) => (),
