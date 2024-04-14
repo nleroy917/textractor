@@ -24,6 +24,7 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
 
         let mime_type = ContentType::from(content_type.as_str());
 
+        let start = std::time::Instant::now();
         let text: Option<String> = match mime_type {
             ContentType::Pdf => Some(PdfExtractor::extract(&data)?),
             ContentType::MsWord => Some(DocxExtractor::extract(&data)?),
@@ -49,10 +50,12 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
             ContentType::MsAccess => None, // not yet supported
             ContentType::Unknown => None, // not yet supported
         };
+        let elapsed = start.elapsed();
 
         match text {
             Some(text) => {
                 extracted_text.push(ExtractionResult {
+                    extraction_time: elapsed.as_secs_f32(),
                     success: true,
                     name,
                     file_name,
@@ -62,6 +65,7 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
             }
             None => {
                 extracted_text.push(ExtractionResult {
+                    extraction_time: elapsed.as_secs_f32(),
                     success: false,
                     name,
                     file_name,

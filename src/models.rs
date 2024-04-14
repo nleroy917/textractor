@@ -9,6 +9,7 @@ pub struct ServerInfo {
 
 #[derive(Serialize)]
 pub struct ExtractionResult {
+    pub extraction_time: f32,
     pub success: bool,
     pub name: String,
     pub file_name: String,
