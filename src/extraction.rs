@@ -100,6 +100,8 @@ impl From<&str> for ContentType {
 
             // plain text
             "text/plain" => ContentType::Txt,
+            "text/tab-separated-values" => ContentType::Txt,
+            "text/csv" => ContentType::Txt,
 
             // pdfs
             "application/pdf" => ContentType::Pdf,
