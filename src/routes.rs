@@ -1,7 +1,7 @@
 use axum::{extract::Multipart, response::Html, Json};
 
 use crate::errors::AppError;
-use crate::extraction::{ContentType, DocxExtractor, Extract, PdfExtractor};
+use crate::extraction::{ContentType, DocxExtractor, Extract, PdfExtractor, TxtExtractor};
 use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo};
 
 pub async fn root() -> Json<ServerInfo> {
@@ -41,15 +41,16 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
                     ContentType::ExcelTemplateMacroEnabled => None, // not yet supported
                     ContentType::ExcelAddInMacroEnabled => None, // not yet supported
                     ContentType::ExcelBinarySheet => None, // not yet supported
-                    ContentType::MsPowerPoint => None, // not yet supported
-                    ContentType::PowerPointPresentation => None, // not yet supported
-                    ContentType::PowerPointTemplate => None, // not yet supported
-                    ContentType::PowerPointSlideshow => None, // not yet supported
-                    ContentType::PowerPointAddInMacroEnabled => None, // not yet supported
-                    ContentType::PowerPointPresentationMacroEnabled => None, // not yet supported
-                    ContentType::PowerPointTemplateMacroEnabled => None, // not yet supported
-                    ContentType::PowerPointSlideshowMacroEnabled => None, // not yet supported
+                    ContentType::MsPowerPoint => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointPresentation => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointTemplate => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointSlideshow => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointAddInMacroEnabled => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointPresentationMacroEnabled => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointTemplateMacroEnabled => Some(PdfExtractor::extract(&data)?),
+                    ContentType::PowerPointSlideshowMacroEnabled => Some(PdfExtractor::extract(&data)?),
                     ContentType::MsAccess => None, // not yet supported
+                    ContentType::Txt => Some(TxtExtractor::extract(&data)?),
                     ContentType::Unknown => None, // not yet supported
                 };
                 let elapsed = start.elapsed();

@@ -27,11 +27,14 @@ pub enum ContentType {
     PowerPointTemplateMacroEnabled,
     PowerPointSlideshowMacroEnabled,
     MsAccess,
+    Txt,
     Unknown,
 }
 
 pub struct PdfExtractor;
 pub struct DocxExtractor;
+pub struct PptxExtractor;
+pub struct TxtExtractor;
 
 impl From<&str> for ContentType {
     fn from(value: &str) -> Self {
@@ -94,6 +97,9 @@ impl From<&str> for ContentType {
 
             // microsoft access for some reason?
             "application/vnd.ms-access" => ContentType::MsAccess,
+
+            // plain text
+            "text/plain" => ContentType::Txt,
 
             // pdfs
             "application/pdf" => ContentType::Pdf,
@@ -162,5 +168,18 @@ impl Extract for DocxExtractor {
             }
         }
         Ok(documetn_text)
+    }
+}
+
+impl Extract for PptxExtractor {
+    fn extract(_data: &[u8]) -> Result<String, anyhow::Error> {
+        Ok("".to_string())
+    }
+}
+
+impl Extract for TxtExtractor {
+    fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
+        let text = String::from_utf8_lossy(data); // losy because we don't care about encoding
+        Ok(text.to_string())
     }
 }
