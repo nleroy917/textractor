@@ -1,4 +1,4 @@
-# textractor
+# textractor 🚜
 A simple text extractor for PDF files. This works as a microservice and can be used to extract text from PDF files very quickly for further processing. It is intended to be used to support other services that require text extraction from PDF files, namely machine learning models.
 
 ## Running
