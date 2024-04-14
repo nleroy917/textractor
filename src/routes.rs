@@ -1,4 +1,4 @@
-use axum::{extract::Multipart, Json};
+use axum::{extract::Multipart, Json, response::Html};
 
 use crate::errors::AppError;
 use crate::extraction::{ContentType, DocxExtractor, Extract, PdfExtractor};
@@ -75,4 +75,26 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
     Ok(Json(ExtractionResponse {
         results: extracted_text,
     }))
+}
+
+pub async fn show_form() -> Html<&'static str> {
+    Html(
+        r#"
+        <!doctype html>
+        <html>
+            <head></head>
+            <body>
+                <form action="/extract" method="post" enctype="multipart/form-data">
+                    <label>
+                        Upload file:
+                        <input type="file" name="file" multiple>
+                    </label>
+                    <button type="submit">
+                        Run textract
+                    </button>
+                </form>
+            </body>
+        </html>
+        "#,
+    )
 }

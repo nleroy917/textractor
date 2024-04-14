@@ -19,7 +19,8 @@ async fn main() {
     let app = Router::new()
         // `GET /` goes to `root`
         .route("/", get(routes::root))
-        .route("/extract", post(routes::extract));
+        .route("/extract", post(routes::extract))
+        .route("/test", get(routes::show_form));
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
