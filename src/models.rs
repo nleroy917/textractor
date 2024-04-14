@@ -14,7 +14,8 @@ pub struct ExtractionResult {
     pub name: String,
     pub file_name: String,
     pub content_type: String,
-    pub text: String,
+    pub text: Option<String>,
+    pub error: Option<String>
 }
 
 #[derive(Serialize)]

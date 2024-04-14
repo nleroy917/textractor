@@ -62,7 +62,8 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
                             name,
                             file_name,
                             content_type,
-                            text,
+                            text: Some(text),
+                            error: None,
                         });
                     }
                     None => {
@@ -72,7 +73,8 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
                             name,
                             file_name,
                             content_type,
-                            text: "Unsupported content type".to_string(),
+                            text: None,
+                            error: Some("Unsupported file type".to_string()),
                         });
                     }
                 }
@@ -84,7 +86,8 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
                     name,
                     file_name,
                     content_type,
-                    text: err.body_text(),
+                    text: None,
+                    error: Some(err.to_string()),
                 });
             }
         }
