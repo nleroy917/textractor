@@ -99,23 +99,6 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
 }
 
 pub async fn show_form() -> Html<&'static str> {
-    Html(
-        r#"
-        <!doctype html>
-        <html>
-            <head></head>
-            <body>
-                <form action="/extract" method="post" enctype="multipart/form-data">
-                    <label>
-                        Upload file:
-                        <input type="file" name="file" multiple>
-                    </label>
-                    <button type="submit">
-                        Run textract
-                    </button>
-                </form>
-            </body>
-        </html>
-        "#,
-    )
+    // return an htnl file from ../assets/form.html
+    Html(include_str!("../assets/form.html"))
 }
