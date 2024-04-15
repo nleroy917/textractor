@@ -1,6 +1,6 @@
 <h1 align="center">textractor 🚜</h1>
 
-A simple text extractor for PDF files. This works as a microservice and can be used to extract text from PDF files very quickly for further processing. It is intended to be used to support other services that require text extraction from PDF files, namely machine learning models.
+A simple text extractor for various files. Includes core functionality for extracting text from files, a command-line interface, restful API, and python bindings. PProject is a work in progress, and contributions are welcome.
 
 ## Running
 There are two ways to run this service: using Docker or running natively with Rust.
