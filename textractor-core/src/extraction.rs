@@ -23,7 +23,7 @@ impl Extract for PdfExtractor {
 impl Extract for DocxExtractor {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
         let doc = read_docx(data)?;
-        let mut documetn_text = String::new();
+        let mut document_text = String::new();
         let children = doc.document.children;
         for child in children {
             match child {
@@ -34,7 +34,7 @@ impl Extract for DocxExtractor {
                                 for child in run.children {
                                     match child {
                                         docx_rs::RunChild::Text(text) => {
-                                            documetn_text.push_str(&text.text);
+                                            document_text.push_str(&text.text);
                                         }
                                         docx_rs::RunChild::Sym(_) => (),
                                         docx_rs::RunChild::DeleteText(_) => (),
@@ -71,7 +71,7 @@ impl Extract for DocxExtractor {
                 docx_rs::DocumentChild::TableOfContents(_) => (),
             }
         }
-        Ok(documetn_text)
+        Ok(document_text)
     }
 }
 

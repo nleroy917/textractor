@@ -1,7 +1,7 @@
 FROM rust:1.76.0 as builder
 
 WORKDIR /usr/src/app
-COPY . .
+COPY textractor-web/* .
 
 # Will build and cache the binary and dependent crates in release mode
 RUN --mount=type=cache,target=/usr/local/cargo,from=rust:latest,source=/usr/local/cargo \
