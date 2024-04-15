@@ -6,9 +6,8 @@ use anyhow::Result;
 
 use textractor::extraction::extract;
 
-#[pyfunction(name="extract_text_from_file")]
+#[pyfunction(name = "extract_text_from_file")]
 pub fn py_extract_text_from_file(path: String) -> Result<String> {
-    
     let path = std::path::Path::new(&path);
     let file = std::fs::File::open(path)?;
     let mut reader = std::io::BufReader::new(file);
@@ -24,7 +23,7 @@ pub fn py_extract_text_from_file(path: String) -> Result<String> {
     }
 }
 
-#[pyfunction(name="extract_text_from_bytes")]
+#[pyfunction(name = "extract_text_from_bytes")]
 pub fn py_extract_text_from_bytes(data: &[u8]) -> Result<String> {
     let text = extract(data)?;
 

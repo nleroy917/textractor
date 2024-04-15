@@ -23,7 +23,6 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
 
         match data {
             Ok(data) => {
-
                 let start = std::time::Instant::now();
                 let text = textractor::extraction::extract(&data)?;
                 let elapsed = start.elapsed();

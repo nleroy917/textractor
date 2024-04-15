@@ -115,7 +115,7 @@ pub fn extract(data: &[u8]) -> Result<Option<String>> {
         ContentType::Txt => Some(TxtExtractor::extract(data)?),
         ContentType::Epub => None, // TODO: implement epub extractor
         ContentType::Mobi => None, // TODO: implement epub extractor
-        ContentType::Unknown => None
+        ContentType::Unknown => None,
     };
     Ok(result)
 }

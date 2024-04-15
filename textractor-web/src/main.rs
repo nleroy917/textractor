@@ -1,7 +1,7 @@
 use axum::{
+    extract::DefaultBodyLimit,
     routing::{get, post},
     Router,
-    extract::DefaultBodyLimit
 };
 
 const CONTENT_LENGTH_LIMIT: usize = 20 * 1024 * 1024; // 20MB

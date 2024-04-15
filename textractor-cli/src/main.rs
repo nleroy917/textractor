@@ -1,8 +1,8 @@
 use anyhow::{ensure, Context, Result};
 
-use std::io::{stdout, stderr, BufReader, Read, Write};
-use std::path::Path;
 use std::fs::File;
+use std::io::{stderr, stdout, BufReader, Read, Write};
+use std::path::Path;
 
 use clap::{arg, Command};
 
@@ -32,11 +32,10 @@ fn main() -> Result<()> {
     let mut stdout_handle = stdout.lock();
     let mut stderr_handle = stderr();
 
-    let file_path = matches.get_one::<String>("path")
-                                    .with_context(|| {
-                                        "Failed to get path argument"
-                                    })?;
-    
+    let file_path = matches
+        .get_one::<String>("path")
+        .with_context(|| "Failed to get path argument")?;
+
     let file_path = Path::new(&file_path);
 
     ensure!(file_path.exists(), "File does not exist");
