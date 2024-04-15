@@ -5,9 +5,10 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "textractor_py"
+name = "textractor"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = "0.20.0"
+anyhow = "1.0.82"
+pyo3 = { version = "0.20.0", features = ["anyhow"] }
 textractor = { path = "../textractor-core"}
