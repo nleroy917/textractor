@@ -1,115 +1,17 @@
+use anyhow::Result;
 use docx_rs::read_docx;
 use pdf_extract::extract_text_from_mem;
 
+use crate::detection::ContentType;
+
 pub trait Extract {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error>;
-}
-pub enum ContentType {
-    Pdf,
-    MsWord,
-    WordDocument,
-    WordTemplate,
-    WordDocumentMacroEnabled,
-    WordTemplateMacroEnabled,
-    MsExcel,
-    ExcelSheet,
-    ExcelTemplate,
-    ExcelSheetMacroEnabled,
-    ExcelTemplateMacroEnabled,
-    ExcelAddInMacroEnabled,
-    ExcelBinarySheet,
-    MsPowerPoint,
-    PowerPointPresentation,
-    PowerPointTemplate,
-    PowerPointSlideshow,
-    PowerPointAddInMacroEnabled,
-    PowerPointPresentationMacroEnabled,
-    PowerPointTemplateMacroEnabled,
-    PowerPointSlideshowMacroEnabled,
-    MsAccess,
-    Txt,
-    Unknown,
 }
 
 pub struct PdfExtractor;
 pub struct DocxExtractor;
 pub struct PptxExtractor;
 pub struct TxtExtractor;
-
-impl From<&str> for ContentType {
-    fn from(value: &str) -> Self {
-        match value {
-            // word documents
-            "application/msword" => ContentType::MsWord,
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => {
-                ContentType::WordDocument
-            }
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.template" => {
-                ContentType::WordTemplate
-            }
-            "application/vnd.ms-word.document.macroEnabled.12" => {
-                ContentType::WordDocumentMacroEnabled
-            }
-            "application/vnd.ms-word.template.macroEnabled.12" => {
-                ContentType::WordTemplateMacroEnabled
-            }
-
-            // excel documents
-            "application/vnd.ms-excel" => ContentType::MsExcel,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => {
-                ContentType::ExcelSheet
-            }
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.template" => {
-                ContentType::ExcelTemplate
-            }
-            "application/vnd.ms-excel.sheet.macroEnabled.12" => ContentType::ExcelSheetMacroEnabled,
-            "application/vnd.ms-excel.template.macroEnabled.12" => {
-                ContentType::ExcelTemplateMacroEnabled
-            }
-            "application/vnd.ms-excel.addin.macroEnabled.12" => ContentType::ExcelAddInMacroEnabled,
-            "application/vnd.ms-excel.sheet.binary.macroEnabled.12" => {
-                ContentType::ExcelBinarySheet
-            }
-
-            // powerpoint
-            "application/vnd.ms-powerpoint" => ContentType::MsPowerPoint,
-            "application/vnd.openxmlformats-officedocument.presentationml.presentation" => {
-                ContentType::PowerPointPresentation
-            }
-            "application/vnd.openxmlformats-officedocument.presentationml.template" => {
-                ContentType::PowerPointTemplate
-            }
-            "application/vnd.openxmlformats-officedocument.presentationml.slideshow" => {
-                ContentType::PowerPointSlideshow
-            }
-            "application/vnd.ms-powerpoint.addin.macroEnabled.12" => {
-                ContentType::PowerPointAddInMacroEnabled
-            }
-            "application/vnd.ms-powerpoint.presentation.macroEnabled.12" => {
-                ContentType::PowerPointPresentationMacroEnabled
-            }
-            "application/vnd.ms-powerpoint.template.macroEnabled.12" => {
-                ContentType::PowerPointTemplateMacroEnabled
-            }
-            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" => {
-                ContentType::PowerPointSlideshowMacroEnabled
-            }
-
-            // microsoft access for some reason?
-            "application/vnd.ms-access" => ContentType::MsAccess,
-
-            // plain text
-            "text/plain" => ContentType::Txt,
-            "text/tab-separated-values" => ContentType::Txt,
-            "text/csv" => ContentType::Txt,
-
-            // pdfs
-            "application/pdf" => ContentType::Pdf,
-
-            _ => ContentType::Unknown,
-        }
-    }
-}
 
 impl Extract for PdfExtractor {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
@@ -184,4 +86,36 @@ impl Extract for TxtExtractor {
         let text = String::from_utf8_lossy(data); // losy because we don't care about encoding
         Ok(text.to_string())
     }
+}
+
+pub fn extract(data: &[u8]) -> Result<Option<String>> {
+    let file_type = ContentType::from(data);
+    let result = match file_type {
+        ContentType::Pdf => Some(PdfExtractor::extract(data)?),
+        ContentType::MsWord => Some(DocxExtractor::extract(data)?),
+        ContentType::WordDocument => Some(DocxExtractor::extract(data)?),
+        ContentType::WordTemplate => Some(DocxExtractor::extract(data)?),
+        ContentType::WordDocumentMacroEnabled => Some(DocxExtractor::extract(data)?),
+        ContentType::WordTemplateMacroEnabled => Some(DocxExtractor::extract(data)?),
+        ContentType::MsExcel => None, // TODO: implement ExcelExtractor
+        ContentType::ExcelSheet => None, // TODO: implement ExcelExtractor
+        ContentType::ExcelTemplate => None, // TODO: implement ExcelExtractor
+        ContentType::ExcelSheetMacroEnabled => None, // TODO: implement ExcelExtractor
+        ContentType::ExcelTemplateMacroEnabled => None, // TODO: implement ExcelExtractor
+        ContentType::ExcelAddInMacroEnabled => None, // TODO: implement ExcelExtractor
+        ContentType::ExcelBinarySheet => None, // TODO: implement ExcelExtractor
+        ContentType::MsPowerPoint => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointPresentation => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointTemplate => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointSlideshow => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointAddInMacroEnabled => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointPresentationMacroEnabled => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointTemplateMacroEnabled => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointSlideshowMacroEnabled => None, // TODO: implement PptxExtractor
+        ContentType::Txt => Some(TxtExtractor::extract(data)?),
+        ContentType::Epub => None, // TODO: implement epub extractor
+        ContentType::Mobi => None, // TODO: implement epub extractor
+        ContentType::Unknown => None
+    };
+    Ok(result)
 }

@@ -7,7 +7,6 @@ use axum::{
 const CONTENT_LENGTH_LIMIT: usize = 20 * 1024 * 1024; // 20MB
 
 pub mod errors;
-pub mod extraction;
 pub mod models;
 pub mod routes;
 

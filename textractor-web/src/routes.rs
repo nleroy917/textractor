@@ -1,7 +1,6 @@
 use axum::{extract::Multipart, response::Html, Json};
 
 use crate::errors::AppError;
-use crate::extraction::{ContentType, DocxExtractor, Extract, PdfExtractor, TxtExtractor};
 use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo};
 
 pub async fn root() -> Json<ServerInfo> {
@@ -24,35 +23,9 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
 
         match data {
             Ok(data) => {
-                let mime_type = ContentType::from(content_type.as_str());
 
                 let start = std::time::Instant::now();
-                let text: Option<String> = match mime_type {
-                    ContentType::Pdf => Some(PdfExtractor::extract(&data)?),
-                    ContentType::MsWord => Some(DocxExtractor::extract(&data)?),
-                    ContentType::WordDocument => Some(DocxExtractor::extract(&data)?),
-                    ContentType::WordTemplate => Some(DocxExtractor::extract(&data)?),
-                    ContentType::WordDocumentMacroEnabled => Some(DocxExtractor::extract(&data)?),
-                    ContentType::WordTemplateMacroEnabled => Some(DocxExtractor::extract(&data)?),
-                    ContentType::MsExcel => None, // not yet supported
-                    ContentType::ExcelSheet => None, // not yet supported
-                    ContentType::ExcelTemplate => None, // not yet supported
-                    ContentType::ExcelSheetMacroEnabled => None, // not yet supported
-                    ContentType::ExcelTemplateMacroEnabled => None, // not yet supported
-                    ContentType::ExcelAddInMacroEnabled => None, // not yet supported
-                    ContentType::ExcelBinarySheet => None, // not yet supported
-                    ContentType::MsPowerPoint => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointPresentation => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointTemplate => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointSlideshow => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointAddInMacroEnabled => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointPresentationMacroEnabled => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointTemplateMacroEnabled => Some(PdfExtractor::extract(&data)?),
-                    ContentType::PowerPointSlideshowMacroEnabled => Some(PdfExtractor::extract(&data)?),
-                    ContentType::MsAccess => None, // not yet supported
-                    ContentType::Txt => Some(TxtExtractor::extract(&data)?),
-                    ContentType::Unknown => None, // not yet supported
-                };
+                let text = textractor::extraction::extract(&data)?;
                 let elapsed = start.elapsed();
 
                 match text {
