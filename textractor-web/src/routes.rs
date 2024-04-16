@@ -3,6 +3,13 @@ use axum::{extract::Multipart, response::Html, Json};
 use crate::errors::AppError;
 use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo};
 
+#[utoipa::path(
+    get,
+    path = "/",
+    responses(
+        (status = 200, description = "List server info", body = [ServerInfo])
+    )
+)]
 pub async fn root() -> Json<ServerInfo> {
     let info = ServerInfo {
         version: env!("CARGO_PKG_VERSION").to_string(),
@@ -12,6 +19,14 @@ pub async fn root() -> Json<ServerInfo> {
     Json(info)
 }
 
+
+#[utoipa::path(
+    post,
+    path = "/extract",
+    responses(
+        (status = 200, description = "Result of a file extraction.", body = [ExtractionResponse])
+    )
+)]
 pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse>, AppError> {
     let mut extracted_text: Vec<ExtractionResult> = Vec::new();
 

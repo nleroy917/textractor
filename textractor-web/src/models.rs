@@ -1,13 +1,14 @@
 use serde::Serialize;
+use utoipa::ToSchema;
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct ServerInfo {
     pub version: String,
     pub name: String,
     pub message: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct ExtractionResult {
     pub extraction_time: f32,
     pub success: bool,
@@ -18,7 +19,7 @@ pub struct ExtractionResult {
     pub error: Option<String>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, ToSchema)]
 pub struct ExtractionResponse {
     pub results: Vec<ExtractionResult>,
 }

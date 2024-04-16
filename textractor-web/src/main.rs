@@ -3,12 +3,15 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 const CONTENT_LENGTH_LIMIT: usize = 20 * 1024 * 1024; // 20MB
 
 pub mod errors;
 pub mod models;
 pub mod routes;
+pub mod docs;
 
 #[tokio::main]
 async fn main() {
@@ -19,6 +22,8 @@ async fn main() {
 
     // build our application with a route
     let app = Router::new()
+        .merge(SwaggerUi::new("/docs")
+            .url("/docs/openapi.json", docs::ApiDoc::openapi()))
         // `GET /` goes to `root`
         .route("/", get(routes::root))
         .route("/extract", post(routes::extract))
