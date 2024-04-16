@@ -23,3 +23,9 @@ pub struct ExtractionResult {
 pub struct ExtractionResponse {
     pub results: Vec<ExtractionResult>,
 }
+
+
+#[derive(ToSchema, Debug)]
+pub struct FileUpload {
+    pub file: Vec<u8>,
+}

@@ -13,7 +13,8 @@ use crate::models;
         schemas(
             models::ServerInfo,
             models::ExtractionResult,
-            models::ExtractionResponse
+            models::ExtractionResponse,
+            models::FileUpload
         )
     ),
     tags(

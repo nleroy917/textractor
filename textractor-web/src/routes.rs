@@ -1,7 +1,7 @@
 use axum::{extract::Multipart, response::Html, Json};
 
 use crate::errors::AppError;
-use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo};
+use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo, FileUpload};
 
 #[utoipa::path(
     get,
@@ -23,6 +23,10 @@ pub async fn root() -> Json<ServerInfo> {
 #[utoipa::path(
     post,
     path = "/extract",
+    request_body(
+        content_type = "multipart/form-data",
+        content = FileUpload
+    ),
     responses(
         (status = 200, description = "Result of a file extraction.", body = [ExtractionResponse])
     )
