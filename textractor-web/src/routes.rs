@@ -1,7 +1,7 @@
 use axum::{extract::Multipart, response::Html, Json};
 
 use crate::errors::AppError;
-use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo, FileUpload};
+use crate::models::{ExtractionResponse, ExtractionResult, ServerInfo};
 
 #[utoipa::path(
     get,

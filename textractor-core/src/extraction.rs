@@ -88,6 +88,15 @@ impl Extract for TxtExtractor {
     }
 }
 
+///
+/// Extracts text from a document. This function will attempt to detect the type of document and
+/// extract text from it. If the document type is not supported, it will return None.
+/// 
+/// # Arguments
+/// - `data` - The document data to extract text from.
+/// 
+/// # Returns
+/// - `Ok(Some(String))` - The extracted text.
 pub fn extract(data: &[u8]) -> Result<Option<String>> {
     let file_type = ContentType::from(data);
     let result = match file_type {

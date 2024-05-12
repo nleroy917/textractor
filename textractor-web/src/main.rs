@@ -27,7 +27,7 @@ async fn main() {
         // `GET /` goes to `root`
         .route("/", get(routes::root))
         .route("/extract", post(routes::extract))
-        .layer(DefaultBodyLimit::max(CONTENT_LENGTH_LIMIT))
+            .layer(DefaultBodyLimit::max(CONTENT_LENGTH_LIMIT))
         .route("/test", get(routes::show_form));
 
     // run our app with hyper, listening globally on port 3000

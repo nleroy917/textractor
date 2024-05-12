@@ -8,7 +8,7 @@
         "textractor-web/Cargo.toml",
         "textractor-py/Cargo.toml",
         "textractor-cli/Cargo.toml",
-
+        "textractor-wasm/Cargo.toml",
     ],
     "configurations": [
         {
