@@ -1,4 +1,4 @@
-<h1 align="center">textractor wasm 🚜🕸️</h1>
+<h1 align="center">textractor-js 🚜🕸️</h1>
 
 A simple text extractor for various files compiled to WebAssembly. This is intended to be used directly in the browser to quickly and easily extract text from various file formats.
 
