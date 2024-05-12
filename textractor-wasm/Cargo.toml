@@ -1,5 +1,5 @@
 [package]
-name = "textractor-wasm"
+name = "textractor-js"
 version = "0.1.0"
 authors = ["Nathan LeRoy <NLeRoy917@gmail.com>"]
 edition = "2018"
