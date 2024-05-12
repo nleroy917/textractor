@@ -1,6 +1,10 @@
+use std::io::Write;
+
 use anyhow::Result;
 use docx_rs::read_docx;
 use pdf_extract::extract_text_from_mem;
+use tempfile::NamedTempFile;
+use msoffice_pptx::document::PPTXDocument;
 
 use crate::detection::ContentType;
 
@@ -76,7 +80,38 @@ impl Extract for DocxExtractor {
 }
 
 impl Extract for PptxExtractor {
-    fn extract(_data: &[u8]) -> Result<String, anyhow::Error> {
+    fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
+        let mut file = NamedTempFile::new()?;
+        file.write_all(data)?;
+        let path = file.into_temp_path();
+        let pptx = PPTXDocument::from_file(&path).unwrap();
+        let mut text = String::new();
+        for (_, slide) in &pptx.slide_map {
+            // Do something with slides
+            for shape in slide.common_slide_data.shape_tree.shape_array.iter() {
+                match shape {
+                    msoffice_pptx::pml::ShapeGroup::Shape(s) => {
+                        match &s.text_body {
+                            Some(text) => {
+                                for paragraph in text.paragraph_array.iter() {
+                                    for text_run in paragraph.text_run_list.iter() {
+                                        match text_run {
+                                            _ => {},
+                                        }
+                                    }
+                                }
+                            },
+                            None => ()
+                        }
+                    },
+                    msoffice_pptx::pml::ShapeGroup::GroupShape(_) => todo!(),
+                    msoffice_pptx::pml::ShapeGroup::GraphicFrame(_) => (),
+                    msoffice_pptx::pml::ShapeGroup::Connector(_) => (),
+                    msoffice_pptx::pml::ShapeGroup::Picture(_) => (),
+                    msoffice_pptx::pml::ShapeGroup::ContentPart(_) => (),
+                }
+            }
+          }
         Ok("".to_string())
     }
 }
