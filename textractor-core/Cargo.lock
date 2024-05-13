@@ -793,6 +793,7 @@ dependencies = [
  "docx-rs",
  "infer",
  "msoffice_pptx",
+ "msoffice_shared",
  "pdf-extract",
  "tempfile",
 ]

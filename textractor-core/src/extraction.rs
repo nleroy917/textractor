@@ -95,9 +95,7 @@ impl Extract for PptxExtractor {
                             Some(text) => {
                                 for paragraph in text.paragraph_array.iter() {
                                     for text_run in paragraph.text_run_list.iter() {
-                                        match text_run {
-                                            _ => {},
-                                        }
+                                        
                                     }
                                 }
                             },
