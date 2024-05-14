@@ -1,10 +1,9 @@
-use std::io::Write;
-
-use anyhow::Result;
+use std::io::{Cursor, Read};
+use zip::ZipArchive;
+use xml::reader::{EventReader, XmlEvent};
+use anyhow::{Context, Result};
 use docx_rs::read_docx;
 use pdf_extract::extract_text_from_mem;
-use tempfile::NamedTempFile;
-use msoffice_pptx::document::PPTXDocument;
 
 use crate::detection::ContentType;
 
@@ -81,36 +80,51 @@ impl Extract for DocxExtractor {
 
 impl Extract for PptxExtractor {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
-        let mut file = NamedTempFile::new()?;
-        file.write_all(data)?;
-        let path = file.into_temp_path();
-        let pptx = PPTXDocument::from_file(&path).unwrap();
-        let mut text = String::new();
-        for (_, slide) in &pptx.slide_map {
-            // Do something with slides
-            for shape in slide.common_slide_data.shape_tree.shape_array.iter() {
-                match shape {
-                    msoffice_pptx::pml::ShapeGroup::Shape(s) => {
-                        match &s.text_body {
-                            Some(text) => {
-                                for paragraph in text.paragraph_array.iter() {
-                                    for text_run in paragraph.text_run_list.iter() {
-                                        
-                                    }
-                                }
-                            },
-                            None => ()
-                        }
-                    },
-                    msoffice_pptx::pml::ShapeGroup::GroupShape(_) => todo!(),
-                    msoffice_pptx::pml::ShapeGroup::GraphicFrame(_) => (),
-                    msoffice_pptx::pml::ShapeGroup::Connector(_) => (),
-                    msoffice_pptx::pml::ShapeGroup::Picture(_) => (),
-                    msoffice_pptx::pml::ShapeGroup::ContentPart(_) => (),
-                }
-            }
-          }
-        Ok("".to_string())
+       // Open the PPTX file as a zip archive
+       let cursor = Cursor::new(data);
+       let mut archive = ZipArchive::new(cursor).context("Failed to read ZIP archive")?;
+
+       // Collect text from each slide
+       let mut result_text = String::new();
+       for i in 0..archive.len() {
+           let mut file = archive.by_index(i).context("Failed to access file in ZIP archive")?;
+           if file.name().starts_with("ppt/slides/") && file.name().ends_with(".xml") {
+               let mut content = String::new();
+               file.read_to_string(&mut content).context("Failed to read slide content")?;
+
+               // Parse the XML content of each slide
+               let parser = EventReader::new(content.as_bytes());
+               let mut is_text = false;
+
+               for event in parser {
+                   match event {
+                       Ok(XmlEvent::StartElement { name, .. }) => {
+                           if name.local_name == "t" {
+                               is_text = true;
+                           }
+                       }
+                       Ok(XmlEvent::Characters(chars)) => {
+                           if is_text {
+                               result_text.push_str(&chars);
+                               result_text.push(' ');
+                               is_text = false;
+                           }
+                       }
+                       Ok(XmlEvent::EndElement { name }) => {
+                           if name.local_name == "p" {
+                               result_text.push('\n');
+                           }
+                       }
+                       Err(e) => {
+                           return Err(anyhow::Error::new(e).context("Failed to parse XML"));
+                       }
+                       _ => {}
+                   }
+               }
+           }
+       }
+
+       Ok(result_text)
     }
 }
 
@@ -147,13 +161,13 @@ pub fn extract(data: &[u8]) -> Result<Option<String>> {
         ContentType::ExcelAddInMacroEnabled => None, // TODO: implement ExcelExtractor
         ContentType::ExcelBinarySheet => None, // TODO: implement ExcelExtractor
         ContentType::MsPowerPoint => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointPresentation => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointTemplate => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointSlideshow => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointAddInMacroEnabled => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointPresentationMacroEnabled => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointTemplateMacroEnabled => None, // TODO: implement PptxExtractor
-        ContentType::PowerPointSlideshowMacroEnabled => None, // TODO: implement PptxExtractor
+        ContentType::PowerPointPresentation => Some(PptxExtractor::extract(data)?),
+        ContentType::PowerPointTemplate => Some(PptxExtractor::extract(data)?),
+        ContentType::PowerPointSlideshow => Some(PptxExtractor::extract(data)?),
+        ContentType::PowerPointAddInMacroEnabled => Some(PptxExtractor::extract(data)?),
+        ContentType::PowerPointPresentationMacroEnabled => Some(PptxExtractor::extract(data)?),
+        ContentType::PowerPointTemplateMacroEnabled => Some(PptxExtractor::extract(data)?),
+        ContentType::PowerPointSlideshowMacroEnabled => Some(PptxExtractor::extract(data)?),
         ContentType::Txt => Some(TxtExtractor::extract(data)?),
         ContentType::Epub => None, // TODO: implement epub extractor
         ContentType::Mobi => None, // TODO: implement epub extractor
