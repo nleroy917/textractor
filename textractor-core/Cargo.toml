@@ -11,4 +11,4 @@ docx-rs = "0.4.15"
 infer = "0.15.0"
 pdf-extract = "0.7.5"
 xml = "0.8.20"
-zip = "1.2.3"
+zip = { version = "*", default-features = false, features = ["deflate", "aes-crypto", "time"] }

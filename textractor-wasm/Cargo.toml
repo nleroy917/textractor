@@ -20,6 +20,7 @@ textractor = { path = "../textractor-core" }
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.7", optional = true }
 getrandom = { version = "0.2.15", features=["js"] }
+zstd-sys = { version = "=2.0.9" }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3.34"
