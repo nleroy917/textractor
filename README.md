@@ -83,6 +83,6 @@ I am working to prioritize adding PPTX and XLSX support, as well as improving th
 - [X] Text (txt)
 - [X] PDF
 - [X] Word (docx)
+- [X] PowerPoint (pptx)
 - [ ] Excel (xlsx)
-- [ ] PowerPoint (pptx)
 - [ ] Images (png, jpg, etc)
