@@ -136,4 +136,4 @@ jobs:
           uses: PyO3/maturin-action@v1
           with:
             command: upload
-            args: --non-interactive --skip-existing ./textractor-py/dist/*
+            args: --repository-url https://pypi.org/project/textractors/ --non-interactive --skip-existing ./textractor-py/dist/*
