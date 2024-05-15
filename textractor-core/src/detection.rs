@@ -1,5 +1,6 @@
 use infer;
 
+#[derive(Debug, PartialEq)]
 pub enum ContentType {
     Pdf,
     MsWord,

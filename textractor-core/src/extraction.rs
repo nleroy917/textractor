@@ -160,7 +160,7 @@ pub fn extract(data: &[u8]) -> Result<Option<String>> {
         ContentType::ExcelTemplateMacroEnabled => None, // TODO: implement ExcelExtractor
         ContentType::ExcelAddInMacroEnabled => None, // TODO: implement ExcelExtractor
         ContentType::ExcelBinarySheet => None, // TODO: implement ExcelExtractor
-        ContentType::MsPowerPoint => None, // TODO: implement PptxExtractor
+        ContentType::MsPowerPoint => Some(PptxExtractor::extract(data)?), // TODO: implement PptxExtractor
         ContentType::PowerPointPresentation => Some(PptxExtractor::extract(data)?),
         ContentType::PowerPointTemplate => Some(PptxExtractor::extract(data)?),
         ContentType::PowerPointSlideshow => Some(PptxExtractor::extract(data)?),
