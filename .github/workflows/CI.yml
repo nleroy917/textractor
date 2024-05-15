@@ -6,12 +6,8 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-      - master
-    tags:
-      - '*'
+  release:
+    types: [created]
   pull_request:
   workflow_dispatch:
 
@@ -30,12 +26,6 @@ jobs:
             target: x86
           - runner: ubuntu-latest
             target: aarch64
-          - runner: ubuntu-latest
-            target: armv7
-          - runner: ubuntu-latest
-            target: s390x
-          - runner: ubuntu-latest
-            target: ppc64le
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -44,6 +34,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: textractor-py
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: 'true'
@@ -52,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-linux-${{ matrix.platform.target }}
-          path: dist
+          path: textractor-py/dist
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -72,6 +63,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: textractor-py
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: 'true'
@@ -79,7 +71,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-windows-${{ matrix.platform.target }}
-          path: dist
+          path: textractor-py/dist
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -98,6 +90,7 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: textractor-py
           target: ${{ matrix.platform.target }}
           args: --release --out dist --find-interpreter
           sccache: 'true'
@@ -105,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wheels-macos-${{ matrix.platform.target }}
-          path: dist
+          path: textractor-py/dist
 
   sdist:
     runs-on: ubuntu-latest
@@ -114,25 +107,34 @@ jobs:
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
+          working-directory: textractor-py
           command: sdist
           args: --out dist
       - name: Upload sdist
         uses: actions/upload-artifact@v4
         with:
           name: wheels-sdist
-          path: dist
+          path: textractor-py/dist
 
   release:
-    name: Release
-    runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
-    needs: [linux, windows, macos, sdist]
-    steps:
-      - uses: actions/download-artifact@v4
-      - name: Publish to PyPI
-        uses: PyO3/maturin-action@v1
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-        with:
-          command: upload
-          args: --non-interactive --skip-existing wheels-*/*
+      name: Release
+      runs-on: ubuntu-latest
+      environment: release
+      permissions:
+        id-token: write
+      if: "startsWith(github.ref, 'refs/tags/')"
+      needs: [linux, windows, macos, sdist]
+      steps:
+        - uses: actions/download-artifact@v3
+          with:
+            name: wheels
+            path: ./textractor-py/dist
+        - name: List contents
+          run: |
+            echo "Contents of dist/"
+            ls -l ./textractor-py/dist/
+        - name: Publish to PyPI
+          uses: PyO3/maturin-action@v1
+          with:
+            command: upload
+            args: --non-interactive --skip-existing ./textractor-py/dist/*
