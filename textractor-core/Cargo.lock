@@ -634,7 +634,7 @@ dependencies = [
 
 [[package]]
 name = "textractor"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "anyhow",
  "docx-rs",
