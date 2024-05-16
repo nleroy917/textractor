@@ -3,6 +3,7 @@ use zip::ZipArchive;
 use xml::reader::{EventReader, XmlEvent};
 use anyhow::{Context, Result};
 use docx_rs::read_docx;
+use scraper::{Html, Selector};
 use pdf_extract::extract_text_from_mem;
 
 use crate::detection::ContentType;
@@ -15,6 +16,7 @@ pub struct PdfExtractor;
 pub struct DocxExtractor;
 pub struct PptxExtractor;
 pub struct TxtExtractor;
+pub struct HtmlExtractor;
 
 impl Extract for PdfExtractor {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
@@ -135,6 +137,23 @@ impl Extract for TxtExtractor {
     }
 }
 
+impl Extract for HtmlExtractor {
+    fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
+        let html = String::from_utf8_lossy(data).to_string();
+        let document = Html::parse_document(&html);
+        // start at the body tag
+        let selector = Selector::parse("body").unwrap();
+
+        let mut text = String::new();
+        for node in document.select(&selector) {
+            // recursively extract text from each child node...
+            // TODO: implement this
+        }
+
+        Ok("".to_string())
+    }
+}
+
 ///
 /// Extracts text from a document. This function will attempt to detect the type of document and
 /// extract text from it. If the document type is not supported, it will return None.
@@ -171,6 +190,7 @@ pub fn extract(data: &[u8]) -> Result<Option<String>> {
         ContentType::Txt => Some(TxtExtractor::extract(data)?),
         ContentType::Epub => None, // TODO: implement epub extractor
         ContentType::Mobi => None, // TODO: implement epub extractor
+        ContentType::Html => None, // TODO: implement html extractor
         ContentType::Unknown => None,
     };
     Ok(result)

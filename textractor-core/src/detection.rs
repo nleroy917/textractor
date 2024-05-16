@@ -26,6 +26,7 @@ pub enum ContentType {
     Txt,
     Epub,
     Mobi,
+    Html,
     Unknown,
 }
 
@@ -92,6 +93,7 @@ impl From<&[u8]> for ContentType {
                 "text/plain" => ContentType::Txt,
                 "application/epub+zip" => ContentType::Epub,
                 "application/x-mobipocket-ebook" => ContentType::Mobi,
+                "text/html" => ContentType::Html,
                 _ => ContentType::Unknown,
             }
         } else {
