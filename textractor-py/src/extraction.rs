@@ -19,7 +19,7 @@ pub fn py_extract_text_from_file(path: String) -> Result<String> {
 
     match text {
         Some(text) => Ok(text),
-        None => Err(anyhow::anyhow!("Unsupported file type")),
+        None => Err(anyhow::anyhow!("Unsupported file type or failed to extract text.")),
     }
 }
 
@@ -29,6 +29,6 @@ pub fn py_extract_text_from_bytes(data: &[u8]) -> Result<String> {
 
     match text {
         Some(text) => Ok(text),
-        None => Err(anyhow::anyhow!("Unsupported file type")),
+        None => Err(anyhow::anyhow!("Unsupported file type or failed to extract text.")),
     }
 }

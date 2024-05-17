@@ -141,16 +141,19 @@ impl Extract for HtmlExtractor {
     fn extract(data: &[u8]) -> Result<String, anyhow::Error> {
         let html = String::from_utf8_lossy(data).to_string();
         let document = Html::parse_document(&html);
+
         // start at the body tag
         let selector = Selector::parse("body").unwrap();
 
-        let mut text = String::new();
+        let mut extracted_text = String::new();
+
         for node in document.select(&selector) {
-            // recursively extract text from each child node...
-            // TODO: implement this
+            for text_piece in node.text() {
+                extracted_text.push_str(text_piece);
+            }
         }
 
-        Ok("".to_string())
+        Ok(extracted_text.to_string())
     }
 }
 
@@ -190,7 +193,7 @@ pub fn extract(data: &[u8]) -> Result<Option<String>> {
         ContentType::Txt => Some(TxtExtractor::extract(data)?),
         ContentType::Epub => None, // TODO: implement epub extractor
         ContentType::Mobi => None, // TODO: implement epub extractor
-        ContentType::Html => None, // TODO: implement html extractor
+        ContentType::Html => Some(HtmlExtractor::extract(data)?), // TODO: implement html extractor
         ContentType::Unknown => None,
     };
     Ok(result)
