@@ -40,6 +40,7 @@ impl Extract for DocxExtractor {
                                     match child {
                                         docx_rs::RunChild::Text(text) => {
                                             document_text.push_str(&text.text);
+                                            document_text.push('\n'); // push a space for new lines
                                         }
                                         docx_rs::RunChild::Sym(_) => (),
                                         docx_rs::RunChild::DeleteText(_) => (),
