@@ -101,3 +101,27 @@ impl From<&[u8]> for ContentType {
         }
     }
 }
+
+// tests
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_detect_pdf() {
+        let data: &[u8] = include_bytes!("../tests/data/felty.pdf");
+        let content_type = ContentType::from(data);
+        
+        assert_eq!(content_type, ContentType::Pdf);
+    }
+
+    #[test]
+    fn test_detect_txt() {
+        let data: &[u8] = include_bytes!("../tests/data/felty.txt");
+        let content_type = ContentType::from(data);
+        
+        assert_eq!(content_type, ContentType::Txt);
+    }
+
+}
