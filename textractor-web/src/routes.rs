@@ -37,7 +37,7 @@ pub async fn extract(mut multipart: Multipart) -> Result<Json<ExtractionResponse
     while let Some(field) = multipart.next_field().await.unwrap() {
         let name = field.name().unwrap().to_string();
         let file_name = field.file_name().unwrap().to_string();
-        let content_type = field.content_type().unwrap().to_string();
+        let content_type = field.content_type().map_or_else(|| "application/octet-stream".to_string(), |ct| ct.to_string());
         let data = field.bytes().await;
 
         match data {
